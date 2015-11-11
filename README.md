@@ -27,6 +27,7 @@
 	*	[如何用 wireshark 来辅助调试]()
 	*	[Request 格式]()
 	*	[Response 格式]()
+	*	[Prepare 语句支持]()
 	*	[TiDB 代码分析]()
 		 
 *	第五章 执行计划优化 	
