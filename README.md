@@ -25,7 +25,7 @@
 *	第四章 MySQL 协议支持
 	*	[协议概述]()
 	*	[如何用wireshar来辅助调试]()
-	*	[Reques 格式]()
+	*	[Request 格式]()
 	*	[Response 格式]()
 	*	[TiDB 代码分析]()
 		 
