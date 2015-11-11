@@ -6,7 +6,7 @@
 *	第二章 基础知识
 	*	[数据库的隔离级别]()
 	*	[分布式系统的 CAP 理论]()
-	*	[Google Spanner简介]()
+	*	[Google Spanner 简介]()
 	*	[Google F1 简介]()
 	*	[HBase 简介]()
 	*	[Google percolator 事务模型]()
@@ -41,7 +41,7 @@
 	*	[TiDB 优化器代码分析]()
 	
 *	第六章 分布式 SQL 数据库的异步 Schema 变更 	
-	*	[为什么在分布式系统中异步变更schema比较困难]()
+	*	[为什么在分布式系统中异步变更 schema 比较困难]()
 	* 	[深度剖析 Google F1 的 schema 变更算法]()
 	*	[TiDB 的异步 schema 变更实现]()
 		
