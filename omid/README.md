@@ -22,11 +22,13 @@ Transactional Clients (TCs)
 通过记录 key 的 hash 而不是 key 自身来减少存储空间
 具体的 hash 算法是murmur3，见代码实现：
 
-public long getCellId() {
-        return Hashing.murmur3_128().newHasher()
-                .putBytes(table.getTableName())
-                .putBytes(row)
-                .putBytes(family)
-                .putBytes(qualifier)
-                .hash().asLong();
-    }
+```java
+   public long getCellId() {
+           return Hashing.murmur3_128().newHasher()
+                   .putBytes(table.getTableName())
+                   .putBytes(row)
+                   .putBytes(family)
+                   .putBytes(qualifier)
+                   .hash().asLong();
+       }
+```
