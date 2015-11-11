@@ -35,14 +35,13 @@
 	*	[分布式/并行优化]()
 	*	[延迟计算]()
 	*	[案例分析：FoundationDB, Apache Phoenix]()
-	*	[案例分析：GreenPlum]()
+	*	[案例分析：Google F1, GreenPlum]()
 	*	[TiDB 优化器代码分析]()
 	
 *	第六章 分布式 SQL 数据库的异步 Schema 变更 	
 	*	[为什么在分布式系统中异步变更schema比较困难]()
 	* 	[深度剖析 Google F1的 schema 变更算法]()
 	*	[TiDB 的异步 schema 变更实现]()
-	
 		
 *	第七章 高级
 	*	[深入分析 Spanner那些相关的论文]()
