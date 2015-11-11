@@ -20,7 +20,7 @@
 	*	[解析整个语句的执行流程]()
 	*	[案例：为TiDB 添加一个新的函数]()
 	*	[案例：为TiDB 添加一个语句]()
-	*	[思考：如何实现 json/protocol buffer]()
+	*	[思考：如何支持 json/protocol buffer]()
 	
 *	第四章 MySQL 协议支持
 	*	[协议概述]()
