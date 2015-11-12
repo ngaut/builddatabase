@@ -10,7 +10,7 @@
 	*	[Google Spanner 简介]
 	*	[Google F1 简介]
 	*	[HBase 简介]
-	*	[Google percolator 事务模型]
+	*	[Google percolator 事务模型](percolator/README.md)
 	*	[Yahoo 的 omid 事务模型](omid/README.md)
 	*	[TiDB 的分布式事务模型]
 	*	[TiDB 的源码结构]
