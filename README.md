@@ -8,7 +8,7 @@
 	*	[select for update or not]
 	*	[分布式系统的 CAP 理论]
 	*	[Google Spanner 简介](spanner/README.md)
-	*	[Google F1 简介]
+	*	[Google F1 简介](f1/README.md)
 	*	[HBase 简介]
 	*	[Google percolator 事务模型](percolator/README.md)
 	*	[Yahoo 的 omid 事务模型](omid/README.md)
