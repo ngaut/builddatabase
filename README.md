@@ -47,5 +47,7 @@
 	*	[TiDB 的异步 schema 变更实现]
 		
 *	第七章 高级
+	*	[Hybird logical clocks](hlc/README.md)
 	*	[深入分析 Spanner 那些相关的论文]
 	*	[一些新的论文和技术讨论]
+
