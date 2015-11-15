@@ -19,10 +19,8 @@
 *	第三章 SQL解析
 	*	[词法分析与 golex 用法]
 	*	[语法分析与 goyacc 用法]
-
 		*	[通过案例看解决Reduce/Reduce冲突](https://github.com/pingcap/tidb/pull/589/files)
-
-			通过案例看如何解决Shift/Reduce冲突
+		*	[通过案例看如何解决Shift/Reduce冲突](https://github.com/pingcap/tidb/pull/128/files)
 	*	[解析整个语句的执行流程]
 	*	[案例：为 TiDB 添加一个新的函数]
 	*	[案例：为 TiDB 添加一个语句]
