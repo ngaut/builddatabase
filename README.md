@@ -44,8 +44,7 @@
 	*	[TiDB 优化器代码分析]
 	
 *	第六章 分布式 SQL 数据库的异步 Schema 变更 	
-	*	[为什么在分布式系统中异步变更 schema 比较困难]
-	* 	[深度剖析 Google F1 的 schema 变更算法]
+	* 	[深度剖析 Google F1 的 schema 变更算法](f1/schema-change.md)
 	*	[TiDB 的异步 schema 变更实现]
 		
 *	第七章 高级
