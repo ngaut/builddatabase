@@ -103,7 +103,8 @@ false: 该函数不是聚合函数 （sum/avg/count 这种是聚合函数）
 
 函数实现在 info.go 中，一些细节可以看下面的代码以及注释
 
-  <code>func builtinConnectionID(args []interface{}, data map[interface{}]interface{}) (v interface{}, err error) { //返回值必须是这两个
+```go
+func builtinConnectionID(args []interface{}, data map[interface{}]interface{}) (v interface{}, err error) { //返回值必须是这两个
      c, ok := data[ExprEvalArgCtx]
       if !ok {
 		return nil, errors.Errorf("Missing ExprEvalArgCtx when evalue builtin")
@@ -119,4 +120,4 @@ false: 该函数不是聚合函数 （sum/avg/count 这种是聚合函数）
 	}
 	return id, nil
 }
-</code>
+```
