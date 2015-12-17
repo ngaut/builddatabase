@@ -14,7 +14,7 @@ TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，�
 
  
 
-将 sql 语句从文本 parse 成结构化的过程中，首先是通过 scanner，将文本切分为 tokens，每个 tokens 会有 name 和 value，其中 name 在 parser 中用于匹配预定义的规则（parser.y），匹配规则时，不断的从 scanner 中获取 token，当能完整匹配上一条规则时，会将匹配上的tokens替换为一个新的变量。同时，在每条规则匹配成功后，可以用 tokens 的 value，构造 ast 中的节点或者是 subtree。对于 builtin 函数来说，一般的形式为 name(args)，scanner 中要识别 function 的 name，括号，参数等元素，parser 中匹配预定义的规则，构造出一个 ast的 node，这个 node 中包含函数参数、函数求值的方法，用于后续的求值。
+将 sql 语句从文本 parse 成结构化的过程中，首先是通过 scanner，将文本切分为 tokens，每个 tokens 会有 name 和 value，其中 name 在 parser 中用于匹配预定义的规则（parser.y），匹配规则时，不断的从 scanner 中获取 token，当能完整匹配上一条规则时，会将匹配上的 tokens 替换为一个新的变量。同时，在每条规则匹配成功后，可以用 tokens 的 value，构造 ast 中的节点或者是 subtree。对于 builtin 函数来说，一般的形式为 name(args)，scanner 中要识别 function 的 name，括号，参数等元素，parser 中匹配预定义的规则，构造出一个 ast 的 node，这个 node 中包含函数参数、函数求值的方法，用于后续的求值。
 
 #### 求值
 
@@ -60,7 +60,7 @@ TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，�
 
 这两行的意思是，对于 connection_id 变量，scanner 返回的 token name 是 connectionID ( parser 可以引用这个名字)，其 value 是这段文本的字面值。当parser中只需要变量名，不需要变量值时，可以省略第一行中的 lval.item = string(l.val)。一般情况下，当解析 MySQL 的[保留关键词](http://dev.mysql.com/doc/refman/5.7/en/keywords.html)时，我们可以只需要变量名，不要变量值，原因是这些关键词不能作为 SQL 语句中的identifier，其字面值多半在 parse中不需要。
 
-比如对于 conNection_ID() 这样一个文本，我们可以在 parser 中获取一个名字叫 connectionID的token，其值为「conNection_ID」，还有 ( 和 ) 这两个 token。
+比如对于 conNection_ID() 这样一个文本，我们可以在 parser 中获取一个名字叫 connectionID 的 token，其值为「conNection_ID」，还有 ( 和 ) 这两个 token。
 
 再看parser/parser.y:
 
