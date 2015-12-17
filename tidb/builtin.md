@@ -10,7 +10,7 @@ SQL 语句首先会经过 parser，从文本 parse 成为 AST（抽象语法树�
 
 #### Parse
 
-TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，可以先看一些教程，如：[https://www.ibm.com/developerworks/cn/linux/sdk/lex/](https://www.ibm.com/developerworks/cn/linux/sdk/lex/。) 。语法解析的代码在 parser 目录下的，scanner.l 和 parser.y 两个文件，通过 goyacc/golex，可以将其转换为 parser.go 和 scanner.go 两个 go 代码文件。转换后的 go 代码，可以被其他的 go 代码调用，执行 parse 操作。
+TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，可以先看一些教程，如：[https://www.ibm.com/developerworks/cn/linux/sdk/lex/](https://www.ibm.com/developerworks/cn/linux/sdk/lex/) 。语法解析的代码在 parser 目录下的，scanner.l 和 parser.y 两个文件，通过 goyacc/golex，可以将其转换为 parser.go 和 scanner.go 两个 go 代码文件。转换后的 go 代码，可以被其他的 go 代码调用，执行 parse 操作。
 
  
 
