@@ -28,7 +28,9 @@ TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，�
 
     * 在 parser.y 中增加规则，将token序列转换成 ast 的 node
 
-    * 在 parser_test.go 中，增加 parser 的单元测试
+    * 在 parser_test.go 中，增加 parser 的单元测试，确保添加或者修改的规则Compile结果正确
+
+    * 如果在 scanner.l 增加了新的token，并且这个token不是 MySQL 的 [Reserved Word](http://dev.mysql.com/doc/refman/5.7/en/keywords.html) ，那么就需要在parser.y中将其加入Identifier规则中（一般添加到UnReservedKeyword或者NotKeywordToken规则中，这两个中的token会被加入Identifier规则），然后在parser_test.go中，增加这个token作为identifier的测试用例
 
     * make
 
