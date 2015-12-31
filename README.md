@@ -15,6 +15,7 @@
 	*	[TiDB 的分布式事务模型]
 	*	[TiDB 的源码结构]
 	*	[如何参与 TiDB 开源项目](howto/README.md)
+	*	[如何添加新的 key value 存储引擎](tidb/storage.md)
 	
 *	第三章 SQL解析
 	*	[词法分析与 golex 用法]
