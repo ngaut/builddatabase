@@ -21,7 +21,9 @@
 ## 变更流程
   通过上面的章节可以了解异步 schema 变更的基本概念，本章节会将这些基本点串联成具体的变更流程。这里在讲述流程的时候会对 MySQL Client 端， MySQL Protocol 层和 KV 层的操作也会一笔带过，只介绍 TiDB SQL 层中处理异步 schema 变更的流程。
   基本流程如图 1，下面将详细介绍每个模块以及具体流程。
-![图1 结构流程图](1.jpg)
+![图 1 结构流程图](1.jpg)
+
+图 1 结构流程图
 
 #### 模块
 *   **TiDB Server**：包含了 TiDB 的 MySQL Protocol 层和 TiDB SQL 层，图中主要描述的是 TiDB SQL 层中涉及到异步 schema 变更的基本模块。
@@ -37,7 +39,11 @@
 
 ![图2 TiDB Server 1流程图](2.jpg)
 
+图 2 TiDB Server 1 流程图
+
 ![图3 TiDB Server 2流程图](3.jpg)
+
+图 3 TiDB Server 2 流程图
 
 1.   MySQL Client 发送给 TiDB Server 一个更改 DDL 的 SQL 语句请求。
 2.   某个 TiDB Server 收到请求（MySQL Protocol 层收到请求进行解析优化），然后到达 TiDB SQL 层进行执行。这步骤主要是在 TiDB SQL 层接到请求后，会起个 start job 的模块根据请求将其封装成特定的 DDL job，然后将此 job 存储到 KV 层， 并通知自己的  worker 有 job 可以执行。
@@ -47,9 +53,11 @@
 6.   TiDB Server 将 response 返回 MySQL Client。
 
 #### 详细流程
-  本小节以在 Table 中添加 Column 为例详细介绍 worker 处理 job 的整个流程，具体流程如图 4 。考虑到与前面章节的连续性，图 4 可以理解为是图 2 和图 3 的展开描绘。
+  本小节以在 Table 中添加 column 为例详细介绍 worker 处理 job 的整个流程，具体流程如图 4 。考虑到与前面章节的连续性，图 4 可以理解为是图 2 和图 3 的展开描绘。
 
 ![图4 add column 流程图](4.jpg)
+
+图 4 add column 流程图
 
 便于在之后介绍中获取信息的方式，此处贴出了 job 的结构。
 ```go
