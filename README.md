@@ -45,7 +45,7 @@
 	
 *	第六章 分布式 SQL 数据库的异步 Schema 变更 	
 	* 	[深度剖析 Google F1 的 schema 变更算法](f1/schema-change.md)
-	*	[TiDB 的异步 schema 变更实现]
+	*	[TiDB 的异步 schema 变更实现](f1/schema-change-implement.md)
 		
 *	第七章 高级
 	*	[Hybird logical clocks](hlc/README.md)
