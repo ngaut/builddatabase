@@ -34,11 +34,11 @@ TiDB 使用 yacc/lex 作为语法解析工具，如果对此完全不了解，�
 
     * make
 
-* 修改 expression/builtin/builtin.go
+* 修改 evaluator/builtin.go
 
     * 实现该函数的功能，并将其 name 和实现注册到 builtin.Funcs 中
 
-* 在 expression/builtin/ 目录下，实现该函数的求值方法
+* 在 evaluator/ 目录下，实现该函数的求值方法
 
     * 通过函数参数以及运行时环境进行求值
 
