@@ -62,3 +62,8 @@
 	*	[TiKV 实现实现跨数据中心容灾]
 	*	[TiKV 如何实现自动扩容]
 	*	[TiKV 分布式事务实现]
+	
+*	第九章 如何测试分布式系统
+	*	[用 Jepsen 模拟网络分区,延迟]
+	*	[用 Namazu 实现 fault injection]
+	*	Fuzz test
