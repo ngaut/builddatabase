@@ -1,5 +1,5 @@
 # 从零开始写分布式数据库
-以 [TiDB](https://github.com/pingcap/tidb) 源码为例
+以 [TiDB](https://github.com/pingcap/tidb) 和 [TiKV](https://github.com/pingcap/tikv) 源码为例
 
 *	第一章 概论
 
