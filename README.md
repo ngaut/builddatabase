@@ -64,6 +64,7 @@
 	*	[TiKV 分布式事务实现]
 	
 *	第九章 如何测试分布式系统
+	*	[大话测试]
 	*	[用 Jepsen 模拟网络分区,延迟]
 	*	[用 Namazu 实现 fault injection]
 	*	Fuzz test
