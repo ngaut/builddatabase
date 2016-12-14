@@ -18,52 +18,48 @@ TiDB语法解析的代码在 parser 目录下，主要涉及 misc.go 和 parser.
 ### **添加 builtin 函数整体流程**
 
 * 修改 parser/misc.go 以及 parser/parser.y
-
     * 在 misc.go 的 tokenMap 中添加规则，将函数名解析为 token
-
     * 在 parser.y 中增加规则，将 token 序列转换成 ast 的 node
-
     * 在 parser_test.go 中，增加 parser 的单元测试
 
-    * make
-
 * 在 evaluator 包中的求值函数
-
     * 在 evaluator/builtin_xx.go 中实现该函数的功能，注意这里的函数是按照类别分了几个文件，比如时间相关的函数在。函数的接口为 type BuiltinFunc func([]types.Datum, context.Context) (types.Datum, error)
-
     * 并将其 name 和实现注册到 builtin.Funcs 中
 
 * 写单元测试
-
     * 在 evaluator 目录下，为函数的实现增加单元测试
+
+* 运行 make dev，确保所有的 test case 都能跑过
 
 ### **示例**
 
 这里[新增 timdiff() 支持的 PR](https://github.com/pingcap/tidb/pull/2249) 为例，进行详细说明
 
 首先看 `parser/misc.go`：
+
 在 `tokenMap` 中添加一个 entry
-<code>
+
+"""
 var tokenMap = map[string]int{
 "TIMEDIFF":            timediff,
 }
-</code>
+"""
 
 这里是定义了一个规则，当发现文本是 timediff 时，转换成一个token，token的名称为 timediff。SQL对大小不敏感，tokenMap里面统一用大写。
 
 对于 `tokenMap` 这张表里面的文本，不要被当作identifier，而是作为一个特别的token。接下来在 parser 规则中，需要对这个 token 进行特殊处理，看 `parser/parser.y`:
 
-<code>
+"""
 %token	<ident>
 timediff	"TIMEDIFF"
-</code>
+"""
 
 这行的意思是从 lexer 中拿到 timediff 这个 token 后，我们给他起个名字叫 "TIMEDIFF”，下面的规则匹配时，我们都使用这个名字。
 
 这里 timediff 必须跟 `tokenMap` 里面 value 的 timediff 对应上，当parser.y 生成 parser.go 的时候 timediff 会被赋予一个 int 类型的 token 编号。
 
 由于 timediff 不是 MySQL 的关键字，我们把规则放在 `FunctionCallNonKeyword` 下，
-<code>
+"""
 |	"TIMEDIFF" '(' Expression ',' Expression ')'
  	{
  		$$ = &ast.FuncCallExpr{
@@ -71,8 +67,7 @@ timediff	"TIMEDIFF"
  			Args: []ast.ExprNode{$3.(ast.ExprNode), $5.(ast.ExprNode)},
 		}
 	}
-</code>
-
+"""
 这里的意思是，当 scanner 输出的 token 序列满足这种 pattern 时，我们将这些 tokens 规约为一个新的变量，叫 `FunctionCallNonKeyword` （通过给$$变量赋值，即可给 `FunctionCallNonKeyword` 赋值），也就是一个 AST 中的 node，类型为 *ast.FuncCallExpr。其成员变量 FnName 的值为 $1 的内容，也就是规则中第一个 token 的 value。
 
 至此我们已经成功的将文本 "timediff()” 转换成为一个 AST node，其成员 FnName 记录了函数名 ”timediff”，用于后面的求值。
@@ -80,9 +75,9 @@ timediff	"TIMEDIFF"
 如果想引用这个规则中某个 token 的值，可以用 $x 这种方式，其中 x 为 token 在规则中的位置，如上面的规则中，$1为 "TIMEDIFF”，$2为 ’(’ ， $3 为 ’)’ 。$1.(string) 的意思是引用第一个位置上的 token 的值，并断言其值为 string 类型。
 
 函数注册在 `builtin.go`中的 `Funcs` 表中：
-<code>
+"""
 ast.TimeDiff:         {builtinTimeDiff, 2, 2},
-</code>
+"""
 
 参数说明如下：
 `builtinTimediff`：timediff 函数的具体实现在 `builtinTimediff` 这个函数中
@@ -90,7 +85,7 @@ ast.TimeDiff:         {builtinTimeDiff, 2, 2},
 2：这个函数最多的参数个数，语法parse过程中，会检查参数的个数是否合法
 
 函数实现在 `builtin_time.go` 中，一些细节可以看下面的代码以及注释
-<code>
+"""
 func builtinTimeDiff(args []types.Datum, ctx context.Context) (d types.Datum, err error) {
 	sc := ctx.GetSessionVars().StmtCtx
 	t1, err := convertToGoTime(sc, args[0])
@@ -107,10 +102,10 @@ func builtinTimeDiff(args []types.Datum, ctx context.Context) (d types.Datum, er
 	d.SetMysqlDuration(t)
 	return d, nil
 }
-</code>
+"""
 
 最后需要增加单元测试：
-<code>
+"""
 func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 	// Test cases from https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_timediff
 	tests := []struct {
@@ -129,4 +124,4 @@ func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 		c.Assert(result.GetMysqlDuration().String(), Equals, test.expectStr)
 	}
 }
-</code>
+"""
