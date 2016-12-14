@@ -39,27 +39,27 @@ TiDB语法解析的代码在 parser 目录下，主要涉及 misc.go 和 parser.
 
 在 `tokenMap` 中添加一个 entry
 
-"""
+```
 var tokenMap = map[string]int{
 "TIMEDIFF":            timediff,
 }
-"""
+```
 
 这里是定义了一个规则，当发现文本是 timediff 时，转换成一个token，token的名称为 timediff。SQL对大小不敏感，tokenMap里面统一用大写。
 
 对于 `tokenMap` 这张表里面的文本，不要被当作identifier，而是作为一个特别的token。接下来在 parser 规则中，需要对这个 token 进行特殊处理，看 `parser/parser.y`:
 
-"""
+```
 %token	<ident>
 timediff	"TIMEDIFF"
-"""
+```
 
 这行的意思是从 lexer 中拿到 timediff 这个 token 后，我们给他起个名字叫 "TIMEDIFF”，下面的规则匹配时，我们都使用这个名字。
 
 这里 timediff 必须跟 `tokenMap` 里面 value 的 timediff 对应上，当parser.y 生成 parser.go 的时候 timediff 会被赋予一个 int 类型的 token 编号。
 
 由于 timediff 不是 MySQL 的关键字，我们把规则放在 `FunctionCallNonKeyword` 下，
-"""
+```
 |	"TIMEDIFF" '(' Expression ',' Expression ')'
  	{
  		$$ = &ast.FuncCallExpr{
@@ -67,7 +67,7 @@ timediff	"TIMEDIFF"
  			Args: []ast.ExprNode{$3.(ast.ExprNode), $5.(ast.ExprNode)},
 		}
 	}
-"""
+```
 这里的意思是，当 scanner 输出的 token 序列满足这种 pattern 时，我们将这些 tokens 规约为一个新的变量，叫 `FunctionCallNonKeyword` （通过给$$变量赋值，即可给 `FunctionCallNonKeyword` 赋值），也就是一个 AST 中的 node，类型为 *ast.FuncCallExpr。其成员变量 FnName 的值为 $1 的内容，也就是规则中第一个 token 的 value。
 
 至此我们已经成功的将文本 "timediff()” 转换成为一个 AST node，其成员 FnName 记录了函数名 ”timediff”，用于后面的求值。
@@ -75,9 +75,9 @@ timediff	"TIMEDIFF"
 如果想引用这个规则中某个 token 的值，可以用 $x 这种方式，其中 x 为 token 在规则中的位置，如上面的规则中，$1为 "TIMEDIFF”，$2为 ’(’ ， $3 为 ’)’ 。$1.(string) 的意思是引用第一个位置上的 token 的值，并断言其值为 string 类型。
 
 函数注册在 `builtin.go`中的 `Funcs` 表中：
-"""
+```
 ast.TimeDiff:         {builtinTimeDiff, 2, 2},
-"""
+```
 
 参数说明如下：
 `builtinTimediff`：timediff 函数的具体实现在 `builtinTimediff` 这个函数中
@@ -85,7 +85,7 @@ ast.TimeDiff:         {builtinTimeDiff, 2, 2},
 2：这个函数最多的参数个数，语法parse过程中，会检查参数的个数是否合法
 
 函数实现在 `builtin_time.go` 中，一些细节可以看下面的代码以及注释
-"""
+```
 func builtinTimeDiff(args []types.Datum, ctx context.Context) (d types.Datum, err error) {
 	sc := ctx.GetSessionVars().StmtCtx
 	t1, err := convertToGoTime(sc, args[0])
@@ -102,10 +102,10 @@ func builtinTimeDiff(args []types.Datum, ctx context.Context) (d types.Datum, er
 	d.SetMysqlDuration(t)
 	return d, nil
 }
-"""
+```
 
 最后需要增加单元测试：
-"""
+```
 func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 	// Test cases from https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_timediff
 	tests := []struct {
@@ -124,4 +124,4 @@ func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 		c.Assert(result.GetMysqlDuration().String(), Equals, test.expectStr)
 	}
 }
-"""
+```
