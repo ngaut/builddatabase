@@ -26,6 +26,9 @@ TiDB语法解析的代码在 parser 目录下，主要涉及 misc.go 和 parser.
     * 在 evaluator/builtin_xx.go 中实现该函数的功能，注意这里的函数是按照类别分了几个文件，比如时间相关的函数在。函数的接口为 type BuiltinFunc func([]types.Datum, context.Context) (types.Datum, error)
     * 并将其 name 和实现注册到 builtin.Funcs 中
 
+* 在 typeinferer 中添加类型推导信息
+    * 在 plan/typeinferer.go 中的 handleFuncCallExpr() 里面添加这个函数的返回结果类型，请保持和 MySQL 的结果一致。全部类型定义参见 [MySQL Const](https://github.com/pingcap/tidb/blob/master/mysql/type.go#L17)。
+
 * 写单元测试
     * 在 evaluator 目录下，为函数的实现增加单元测试
 
@@ -104,7 +107,7 @@ func builtinTimeDiff(args []types.Datum, ctx context.Context) (d types.Datum, er
 }
 ```
 
-最后需要增加单元测试：
+给函数实现添加单元测试：
 ```
 func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 	// Test cases from https://dev.mysql.com/doc/refman/5.7/en/date-and-time-functions.html#function_timediff
@@ -124,4 +127,10 @@ func (s *testEvaluatorSuite) TestTimeDiff(c *C) {
 		c.Assert(result.GetMysqlDuration().String(), Equals, test.expectStr)
 	}
 }
+```
+最后还需要添加类型推导信息：
+```
+case "curtime", "current_time", "timediff":
+    tp = types.NewFieldType(mysql.TypeDuration)
+    tp.Decimal = v.getFsp(x)
 ```
