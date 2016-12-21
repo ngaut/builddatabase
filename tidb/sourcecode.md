@@ -175,8 +175,10 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
 
 # 协议层
 
-    协议层是和应用交互的接口，目前 TiDB 只支持 MySQL 协议，相关的代码都在 server 包中。
-    这一层的主要功能是管理客户端 connection，解析 MySQL 命令并返回执行结果。这一层是按照 MySQL 协议实现，具体的协议可以参考：[https://dev.mysql.com/doc/internals/en/client-server-protocol.html](https://dev.mysql.com/doc/internals/en/client-server-protocol.html)
+协议层是和应用交互的接口，目前 TiDB 只支持 MySQL 协议，相关的代码都在 server 包中。
+
+这一层的主要功能是管理客户端 connection，解析 MySQL 命令并返回执行结果。这一层是按照 MySQL 协议实现，具体的协议可以参考：[https://dev.mysql.com/doc/internals/en/client-server-protocol.html](https://dev.mysql.com/doc/internals/en/client-server-protocol.html)
+
 单个 connection 处理命令的入口方法是 clientConn 类的 [dispatch 方法](https://github.com/pingcap/tidb/blob/master/server/conn.go#L350)，这里会解析协议并调用不同的处理函数。
 
 ![Protocol Layer](./protocol_layer.png)
