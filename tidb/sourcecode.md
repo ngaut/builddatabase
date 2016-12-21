@@ -287,7 +287,7 @@ type PartialResult interface {
 
 DistSQL 提供的对外最重要的一个接口是 Select()。第一个参数 kv.Client，只要 KV 引擎满足带事务、满足 KV 接口，并且满足这个 Client 的一些接口，就可以接入 TiDB。目前有一些其他的厂商和 TiDB 合作开发，在其他的 KV 上 run TiDB，并且支持分布式的 SQL。第二个参数是 SelectRequest 。这个东西是由上层执行器构造出来的，它把计算上的逻辑，比如说一些表达式要不要排序、要不要做聚合，所有的信息都放在 req 里边，是一个 Protobuf 结构，然后发给 Select 接口，最终会发送到进行计算的 TiKV region server 上。
 
-![dist sql example](dist_sql_example.svg)
+![dist sql example](dist_sql_example.png)
 
 分布式执行器在 TiDB 端的主要工作是做任务的分发和结果的收集。Select 接口返回一个数据结构，叫 SelectResult ，这个结构可以认为是一个迭代器，因为下层是有很多 region server，每个节点返回的结果是一个 PartialResult。在这些部分结果之上封装了一个 SelectResult ，就是一个 PartialResult  的迭代器。通过这个的 next 方法可以拿到下一个  PartialResult 。
 SelectResult 的内部实现可以认为是个 pipeline。TiDB 会并发地向各个 region server 发请求，并且按照预定的顺序返回结果给上层，这里的顺序是由下层结果返回顺序以及 Select 接口的 KeepOrder 参数共同决定。
