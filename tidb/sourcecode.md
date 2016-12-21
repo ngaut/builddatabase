@@ -41,14 +41,14 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
 + executor
 
     TiDB 执行器，SQL 语句最终会转化为一系列执行器（物理算子）的组合。这个包对外暴露的最主要的接口是 Executor:
-    ```
+    ```go
     type Executor interface {
-    // 返回下一行数据（如果返回为空，则表明没有更多数据）
-    Next() (*Row, error) 
-    // 关闭当前执行器，做一些清理工作
-    Close() error
-    // 改执行器返回结果的 Schema，包括每个 Field 的详细信息
-    Schema() expression.Schema
+        // 返回下一行数据（如果返回为空，则表明没有更多数据）
+        Next() (*Row, error) 
+        // 关闭当前执行器，做一些清理工作
+        Close() error
+        // 改执行器返回结果的 Schema，包括每个 Field 的详细信息
+        Schema() expression.Schema
     }
     ```
     各种执行器都会实现这个接口，TiDB 的执行引擎采用 Volcano 模型，执行器之间通过上述三个接口交互，每一个执行器只需要通过 Next 接口从其他执行器获取数据以及通过 Schema 接口获取数据的元信息。
