@@ -254,9 +254,36 @@ type Executor interface {
 
 # 分布式执行器
 
-TiDB 作为分布式数据库，内置一个分布式的计算框架，Query 在执行的时候，会尽量分布式+并行。这个框架的入口在 distsql 包中，最重要的是下面两个接口：
+TiDB 作为分布式数据库，内置一个分布式的计算框架，Query 在执行的时候，会尽量分布式+并行。这个框架的入口在 distsql 包中，最重要的是下面这个 API 以及两个 Interface：
 
-![dist_sql_api](dist_sql_api.png)
+```go
+
+// Select do a select request, returns SelectResult.
+// conncurrency: The max concurrency for underlying coprocessor request.
+// keepOrder: If the result should returned in key order. For example if we need keep data in order by
+//            scan index, we should set keepOrder to true.
+func Select(client kv.Client, req *tipb.SelectRequest, keyRanges []kv.KeyRange, concurrency int, keepOrder bool) (SelectResult, error)
+
+// SelectResult is an iterator of coprocessor partial results.
+type SelectResult interface {
+	// Next gets the next partial result.
+	Next() (PartialResult, error)
+	// SetFields sets the expected result type.
+	SetFields(fields []*types.FieldType)
+	// Close closes the iterator.
+	Close() error
+    ...
+}
+
+// PartialResult is the result from a single region server.
+type PartialResult interface {
+	// Next returns the next row of the sub result.
+	// If no more row to return, data would be nil.
+	Next() (handle int64, data []types.Datum, err error)
+	// Close closes the partial result.
+	Close() error
+}
+```
 
 DistSQL 提供的对外最重要的一个接口是 Select()。第一个参数 kv.Client，只要 KV 引擎满足带事务、满足 KV 接口，并且满足这个 Client 的一些接口，就可以接入 TiDB。目前有一些其他的厂商和 TiDB 合作开发，在其他的 KV 上 run TiDB，并且支持分布式的 SQL。第二个参数是 SelectRequest 。这个东西是由上层执行器构造出来的，它把计算上的逻辑，比如说一些表达式要不要排序、要不要做聚合，所有的信息都放在 req 里边，是一个 Protobuf 结构，然后发给 Select 接口，最终会发送到进行计算的 TiKV region server 上。
 
