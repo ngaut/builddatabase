@@ -100,7 +100,7 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
 + expression
 
     表达式的定义，最重要的接口是 :
-    ```
+    ```go
     type Expression interface {
     .....
     }
@@ -242,7 +242,7 @@ TiDB 的优化器相关代码在 plan 包中，这个包的主要工作是将 AS
 相比 MySQL，TiDB 的执行器有两个有点，第一是整个计算框架是一个 MPP 的框架，计算会在多台 TiKV 以及 TiDB 节点上进行，尽可能提高效率和速度；第二是单个算子会尽可能并行，比如 Join/Union 等算子，会启动多个线程同时计算，整个数据计算流程构成一个 pipeline，尽可能缩短每个算子的等待时间。所以 TiDB 在处理大量数据时，比 MySQL 表现好。
 
 执行器最重要的接口在 executor.go 中:
-```
+```go
 // Executor executes a query.
 type Executor interface {
     Next() (*Row, error)
