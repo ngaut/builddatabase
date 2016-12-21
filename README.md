@@ -13,7 +13,7 @@
 	*	[Google percolator 事务模型](percolator/README.md)
 	*	[Yahoo 的 omid 事务模型](omid/README.md)
 	*	[TiDB 的分布式事务模型]
-	*	[TiDB 的源码结构](https://docs.google.com/document/d/1YLJUf4raq_MIRhEcHwkPDQicUUXttK85neHUCT7KO-U/edit?usp=sharing)
+	*	[TiDB 的源码介绍](tidb/sourcecode.md)
 	*	[如何参与 TiDB 开源项目](howto/README.md)
 	*	[如何添加新的 key value 存储引擎](tidb/storage.md)
 	
