@@ -199,7 +199,7 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
 
 进入 Compiler.Compile() 函数，首先会调用 plan.Validate() 对语句进行合法性验证（见 plan/validator.go），然后进入 Preprocess 流程，目前这个阶段，Preprocess 只做了名称解析工作，及将 SQL 语句中的提到的 column 名或者  alias name 绑定到对应的 field上。比如”select c from t;”这个语句，会将 c 这个名字绑定到 t 这个表的对应列上（具体的实现见 plan/resolver.go）。之后就进入 optimizer.Optimize()。
 
-Optimize() 方法中，首先对 AST 中各个node的结果进行推导，如 "select 1, ’xx‘, c from t;”，对于 select fields，第一个 field是”1“，其类型为 Longlong，第二个 field 是”’xx‘“, 其类型为 VarString，第三个field是 “c” 其类型为表 t 中 column c 的类型。注意这里除了类别之外还有 charset 等信息，都要进行推导，具体实现见 plan/typeinferer.go。完成类型推导后，进行逻辑优化（planBuilderbuild()），主要工作是根据代数运算，对 AST 进行等价变换，化简 AST。比如 ”select c from t where c > 1+1*2;“ 可以等价变换为”select c from t where c > 3;“。
+Optimize() 方法中，首先对 AST 中各个node的结果进行推导，如 "select 1, ’xx‘, c from t;”，对于 select fields，第一个 field是”1“，其类型为 Longlong，第二个 field 是”’xx‘“, 其类型为 VarString，第三个field是 “c” 其类型为表 t 中 column c 的类型。注意这里除了类别之外还有 charset 等信息，都要进行推导，具体实现见 plan/typeinferer.go。完成类型推导后，进行逻辑优化（planBuilder.build()），主要工作是根据代数运算，对 AST 进行等价变换，化简 AST。比如 ”select c from t where c > 1+1*2;“ 可以等价变换为”select c from t where c > 3;“。
 
 逻辑优化完成后，进行物理优化，生成查询计划树，并利用索引、根据一些 rule 以及 cost 模型，对树进行变换，减少查询过程的代价，入口在 plan/optimizer.go 中的 doOptimize()方法。
 
@@ -239,7 +239,7 @@ TiDB 的优化器相关代码在 plan 包中，这个包的主要工作是将 AS
 
 虽然优化器是最核心的组件，但是缺少优秀的执行器，依旧无法构成一个优秀的数据库。同样以军队为例，执行器就是军队中冲锋陷阵的士兵。再厉害的将军，如果没有一群能征善战的士兵，同样无法打胜仗。
 
-相比 MySQL，TiDB 的执行器有两个有点，第一是整个计算框架是一个 MPP 的框架，计算会在多台 TiKV 以及 TiDB 节点上进行，尽可能提高效率和速度；第二是单个算子会尽可能并行，比如 Join/Union 等算子，会启动多个线程同时计算，整个数据计算流程构成一个 pipeline，尽可能缩短每个算子的等待时间。所以 TiDB 在处理大量数据时，比 MySQL 表现好。
+相比 MySQL，TiDB 的执行器有两个优点，第一是整个计算框架是一个 MPP 的框架，计算会在多台 TiKV 以及 TiDB 节点上进行，尽可能提高效率和速度；第二是单个算子会尽可能并行，比如 Join/Union 等算子，会启动多个线程同时计算，整个数据计算流程构成一个 pipeline，尽可能缩短每个算子的等待时间。所以 TiDB 在处理大量数据时，比 MySQL 表现好。
 
 执行器最重要的接口在 executor.go 中:
 ```go
