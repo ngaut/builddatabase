@@ -245,9 +245,9 @@ TiDB 的优化器相关代码在 plan 包中，这个包的主要工作是将 AS
 ```
 // Executor executes a query.
 type Executor interface {
- Next() (*Row, error)
- Close() error
- Schema() expression.Schema
+    Next() (*Row, error)
+    Close() error
+    Schema() expression.Schema
 }
 ```
 通过优化器得到的物理查询计划树会转换为一个执行器树，树中的每个节点都会实现这个接口，执行器之间通过 Next 接口传递数据。比如 “select c1 from t where c2 > 10; ” 最终生成的执行器是 Projection->Filter->TableScan 这三个执行器，最上层的 Projection 会不断的调用下层执器的 Next 接口，最终调到底层的 TableScan，从表中获取数据。
