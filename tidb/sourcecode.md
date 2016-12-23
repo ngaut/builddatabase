@@ -16,7 +16,7 @@
 TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底层的存储引擎之间，主要部分分为三层：
 + MySQL Protocol 层
 
-接收 MySQL Client 的请求，解析 MySQL Protocol 的包并转换为 TiDB Session 中的各种命令；处理完成后，将结果结果为 MySQL Protocol 格式，返回给 Client。
+接收 MySQL Client 的请求，解析 MySQL Protocol 的包并转换为 TiDB Session 中的各种命令；处理完成后，将结果转换为 MySQL Protocol 格式，返回给 Client。
 + SQL 层
 
 解析并执行 SQL 语句，制定查询计划并优化，生成执行器并通过 KV 层读取或写入数据，最后返回结果给 MySQL Protocol层。这一层是重点，后面会详细介绍。
