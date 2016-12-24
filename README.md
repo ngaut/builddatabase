@@ -56,7 +56,6 @@
 *	第八章 实现一个分布式 key-value 引擎
 	*	[raft 协议介绍]
 	*	[TiKV 的 raft 实现]
-	*	[Themis 实现介绍]
 	*	[聊聊 Google Spanner]
 	*	[TiKV 系统架构]
 	*	[TiKV 实现实现跨数据中心容灾]
