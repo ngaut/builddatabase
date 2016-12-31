@@ -116,9 +116,7 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
     Const：常量表达式
     ```
 
-+ evaluator
-
-    表达式求值相关逻辑，所有的表达式求值方法都在这里。
+    表达式求值相关逻辑，所有的表达式求值方法也都在这里。
 
 + infoschema
 
