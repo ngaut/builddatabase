@@ -59,10 +59,10 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
     这个包中还包括下面几个功能：
     - validator.go：对 AST 进行合法性验证
     - preprocess.go： 目前只有 name resolve 这一项
-    resolver.go：名称解析，将 SQL 语句中的标识符（database/table/column/alias）解析并绑定到对应的 column 或者是 Field 上。
-    typeinferer.go：推导结果类型。对于 SQL 语句，不需要执行即可推导出结果的类型。
-    logical_plan_builder.go: 制定出优化的逻辑查询计划
-    physical_plan_builder.go: 根据逻辑查询计划制定出物理查询计划
+    - resolver.go：名称解析，将 SQL 语句中的标识符（database/table/column/alias）解析并绑定到对应的 column 或者是 Field 上。
+    - typeinferer.go：推导结果类型。对于 SQL 语句，不需要执行即可推导出结果的类型。
+    - logical_plan_builder.go: 制定出优化的逻辑查询计划
+    - physical_plan_builder.go: 根据逻辑查询计划制定出物理查询计划
 
 + privilege
 
