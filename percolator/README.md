@@ -4,7 +4,7 @@
 		
 ##  Percolator 简介
 
-Percolator 是由Google公司开发的、为大数据集群进行增量处理更新的系统,主要用于google网页搜索索引服务。使用基于Percolator的增量处理系统代替原有的批处理索引系统后，Google在处理同样数据量的文档时，将文档的平均搜索时长提升了50%。
+Percolator是由Google公司开发的、为大数据集群进行增量处理更新的系统，主要用于google网页搜索索引服务。使用基于Percolator的增量处理系统代替原有的批处理索引系统后，Google在处理同样数据量的文档时，将文档的平均搜索延时降低了50%。
 
 Percolator的特点如下
 
@@ -20,24 +20,23 @@ Percolator为可扩展的增量处理提供了两个主要抽象：
 * 观察者(observers)--一种用于处理增量计算的方式
 
 
-
 ## 事务
 
 Percolator 提供了跨行、跨表的、基于快照隔离的ACID事务。
 
 ### Snapshop isolation
 
-Percolator 使用Bigtable的时间戳记维度实现了数据的多版本化.多版本化保证了快照的隔离级别，优点如下：
+Percolator 使用Bigtable的时间戳记维度实现了数据的多版本化。多版本化保证了快照隔离`snapshot isolation`级别，优点如下：
 
 * 对读操作：使得每个读操作都能够从一个带时间戳的稳定快照获取。
 * 对写操作，能很好的应对写写冲突：若事务A和B并发去写一个同一个元素，最多只有一个会提交成功。
 
 ![s_1.jpg](imgs/s_1.jpg)
 
-如图，基于快照隔离的事务，开始于一个开始时间戳`a start timestamp`（图内为小空格）开始，结束于一个提交时间戳`a commit timestamp`（图内为小黑球）。本列包含以下信息：
+如图，基于快照隔离的事务，开始于一个开始时间戳`a start timestamp`（图内为小空格），结束于一个提交时间戳`a commit timestamp`（图内为小黑球）。本例包含以下信息：
 
-* 由于`Transaction 2`的开始时间戳`start timestamp`小于`Transaction 1`的提交时间戳`commit timestamp`,所以`Transaction 2` 不能看到 `Transaction 1` 的提交信息。
-* `Transaction 3` 可以看到`Transaction 2` 和 `Transaction 1` 的提交信息
+* 由于`Transaction 2`的开始时间戳`start timestamp`小于`Transaction 1`的提交时间戳`commit timestamp`，所以`Transaction 2` 不能看到 `Transaction 1` 的提交信息。
+* `Transaction 3` 可以看到`Transaction 2` 和 `Transaction 1` 的提交信息。
 * `Transaction 1` 和 `Transaction 2` 并发执行：如果它们对同一项进行写入，至少有一个会失败。
 
 
@@ -46,14 +45,14 @@ Percolator 使用Bigtable的时间戳记维度实现了数据的多版本化.多
 
 Percolator 的请求会直接反映到对Bigtable的修改上，由于Bigtable没有提供便捷的冲突解决和锁管理，所以Percolator需要独立实现一套锁管理机制。锁的管理必须满足以下条件：
 
-* 能直面机器故障：若一个锁在两阶段提交时消失，系统就能将两个有冲突的事务都提交。
+* 能直面机器故障：若一个锁在两阶段提交时消失，系统可能将两个有冲突的事务都提交。
 * 高吞吐量：上千台机器会同时请求获取锁。
 * 低延时：每个`Get()`操作都需要读取一次锁
 
 故其锁服务在实现时，需要做到：
 
-* 多副本＝》应对故障
-* distributed&balance=>handle load
+* 多副本 ==> 应对故障
+* distributed&balance ==> handle load
 * 写入持久化存储系统
 
 BigTable能够满足以上所有要求。所以Percolator在实现时，将实际的数据存于Bigtable中。
@@ -78,19 +77,18 @@ ${key,start_ts}=>${primary_key,lock_type,..etc}
 
 已提交的数据信息，存储数据所对应的时间戳。其映射关系为
 
-${key}_${commit_ts}=>${start_ts}
+${key,commit_ts}=>${start_ts}
 
 * ${key} 数据的key
 * ${commit_ts} 事务的提交时间
-* ${start_ts} 该事务的开始时间,指向该数据实际数据的存储位置。
-
+* ${start_ts} 该事务的开始时间,指向该数据在`data`中的实际存储位置。
 
 
 #### Data
 
 具体存储数据集，映射关系为
 
-${key}_${start_ts} => ${value}
+${key,start_ts} => ${value}
 
 * ${key} 真实的key
 * ${start_ts} 对应事务的开始时间
@@ -100,12 +98,12 @@ ${key}_${start_ts} => ${value}
 
 ### 案例
 
-Bob 向 Joe 转账7元。该事务于`start timestamp =7` 开始，`commit timestamp=8` 结束。具体过程如下：
+银行转账，Bob 向 Joe 转账7元。该事务于`start timestamp =7` 开始，`commit timestamp=8` 结束。具体过程如下：
 
 1. 初始状态下，Joe的帐户下有10（首先查询`column write`获取最新时间戳数据,获取到`data@5`,然后从`column data`里面获取时间戳为`5`的数据，即`$10`），Bob的帐户下有2。![t_1.jpg](imgs/t_1.jpg)
-2. 转账开始，使用`stat timestamp=7`作为当前事务的开始时间戳,通过写入`Column Lock`锁定Bob的帐户，并将Bob的锁作为本事务的`primary`,同时，将数据`7:$3`写入到`Column,data`列。![t_2.jpg](imgs/t_2.jpg)
-3. 同样的，使用`stat timestamp=7`,锁定Joe的帐户，并将Joe改变后的余额写入到`Column,data`,当前锁作为`secondary`并存储一个指向`primary`的引用（当失败时，能够快速定位到`primary`锁，并根据其状态异步清理）![t_3.jpg](imgs/t_3.jpg)
-4. 事务带着当前时间戳`commit timestamp=8`进入commit阶段：删除primary所在的lock,并在write列中写入从提交时间戳指向数据存储的一个指针`commit_ts=>data @7`。至此，读请求过来时将看到Bob的余额为3。![t_4.jpg](imgs/t_4.jpg) 
+2. 转账开始，使用`stat timestamp=7`作为当前事务的开始时间戳，将Bob选为本事务的`primary`，通过写入`Column Lock`锁定Bob的帐户，同时将数据`7:$3`写入到`Column,data`列。![t_2.jpg](imgs/t_2.jpg)
+3. 同样的，使用`stat timestamp=7`，锁定Joe的帐户，并将Joe改变后的余额写入到`Column,data`,当前锁作为`secondary`并存储一个指向`primary`的引用（当失败时，能够快速定位到`primary`锁，并根据其状态异步清理）![t_3.jpg](imgs/t_3.jpg)
+4. 事务带着当前时间戳`commit timestamp=8`进入commit阶段：删除primary所在的lock，并在write列中写入从提交时间戳指向数据存储的一个指针`commit_ts=>data @7`。至此，读请求过来时将看到Bob的余额为3。![t_4.jpg](imgs/t_4.jpg) 
 5. 依次在`secondary`项中写入`wirte`并清理锁，整个事务提交结束。在本例中，只有一个`secondary:Joe.`![t_5.jpg](imgs/t_5.jpg)
 
 
@@ -119,8 +117,8 @@ Prewrite是事务两阶段提交的第一步，其从Oracle获取代表当前物
 
 1. 检查`write-write`冲突：从`BigTable`的write列中获取当前`key`的最新数据，若其`commit_ts`大于等于`start_ts`,说明存在更新版本的已提交事务，返回`WriteConflict`错误，结束。
 2. 检查`key`是否已被锁上，如果`key`的锁已存在，返回`KeyIsLock`的错误，结束
-5. 往BigTable的`lock`列写入`lock(start_ts,key)`为当前key加锁,若当前key被选为`primary`,则标记为`primary`,若为`secondary`,则标明指向`primary`的信息
-6. 往BigTable的`data`列写入的数据`data(start_ts,key,value)`。
+5. 往BigTable的`lock`列写入`lock(start_ts,key,primary)`为当前key加锁,若当前key被选为`primary`,则标记为`primary`,若为`secondary`,则标明指向`primary`的信息
+6. 往BigTable的`data`列写入的数据`data(key,start_ts,value)`。
 
 
 ### Commit 
