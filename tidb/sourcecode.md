@@ -47,7 +47,7 @@ TiDB Server 在整个系统中位于 Load Balancer(或者是 Application) 与底
         Next() (*Row, error) 
         // 关闭当前执行器，做一些清理工作
         Close() error
-        // 改执行器返回结果的 Schema，包括每个 Field 的详细信息
+        // 该执行器返回结果的 Schema，包括每个 Field 的详细信息
         Schema() expression.Schema
     }
     ```
