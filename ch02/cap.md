@@ -3,7 +3,8 @@
 *CAP定理*: 指的是在一个分布式系统中，一致性(`Consistency`)、可用性
 (`Availability`)、分区容错(`Partition tolerance`)这三个要素最多只能同时实现两点，
 不可能三者兼顾。下面是一个更直观的图，图片来源[Distributed Systems for fun and profit](http://book.mixu.net/distsys/abstractions.html)
-[图2-1](CAP.png)
+
+![图2-1](CAP.png)
 
 1. *一致性(`C`)*: 这里的一致性不等价于数据库*ACID*中的一致性，也不等价于*Oatmeal*一致
    性，它是针对分布式系统最基本的提升可用性的方式分区复制(副本)。因此这里的一致
@@ -38,10 +39,9 @@
    的分区不可用。
 
 ## `CAP`权衡
-一个全球分布式系统中（全球广域网分布式环境下），网络分区是一个自然的事实(相关参
-考见[ Fallacies of Distributed Computing
+一个全球分布式系统中（全球广域网分布式环境下），网络分区是一个自然的事实(相关参考见[ Fallacies of Distributed Computing
 Explained](http://www.rgoarchitects.com/Files/fallacies.pdf))。 因此，`C`、`A`、
-`P`三者并不对 等:`P`是基础，`CA`之间权衡。但是这并不意味着没有`AP`系统，例如分布
+`P`三者并不对等:`P`是基础，`CA`之间权衡。但是这并不意味着没有`AP`系统，例如分布
 式缓存系统.
 
 然而如果网络分区很少发生(例如Google的Spanner)，就没有必要牺牲一致性和可用性。其
