@@ -11,7 +11,7 @@
 
 ## 引入新概念：
 *   **元数据记录**：为了简化设计，引入 system database 和 system table 来记录异步 schema 变更的过程中的一些元数据。
-*   **State**：根据 F1 的异步 schema 变更过程，中间引入了一些状态，这些状态要和 column，index， table 以及 database 绑定， state 主要包括 none, delete only, write only, write reorganization, public。前面的顺序是在创建操作的时候的，创建操作的状态与它d的顺序相反，write reorganization 改为 delete reorganization，虽然都是 reorganization 状态，但是由于可见级别是有很大区别的，所以将其分为两种状态标记。
+*   **State**：根据 F1 的异步 schema 变更过程，中间引入了一些状态，这些状态要和 column，index， table 以及 database 绑定， state 主要包括 none, delete only, write only, write reorganization, public。前面的顺序是在创建操作的时候的，删除操作的状态与它的顺序相反，write reorganization 改为 delete reorganization，虽然都是 reorganization 状态，但是由于可见级别是有很大区别的，所以将其分为两种状态标记。
 *   **Lease**：同一时刻系统所有节点中 schema 最多有两个不同的版本，即最多有两种不同状态。正因为如此，一个租期内每个正常的节点都会自动加载 schema 的信息，如果不能在租期内正常加载，此节点会自动退出整个系统。那么要确保整个系统的所有节点都已经从某个状态更新到下个状态需要 2 倍的租期时间。
 *   **Job**： 每个单独的 DDL 操作可看做一个 job。在一个 DDL 操作开始时，会将此操作封装成一个 job 并存放到 job queue，等此操作完成时，会将此 job 从 job queue 删除，并在存入 history job queue，便于查看历史 job。
 *   **Worker**：每个节点都有一个 worker 用来处理 job。
